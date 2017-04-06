@@ -497,7 +497,7 @@ uppercase = set(list(string.ascii_uppercase))
 digits = set(list(string.digits))
 
 class TextNode(Node):
-    __slots__ = ["log", "max_version", "version", "position", "changed", "isolated", "textlen", "local_error", "nested_errors", "nested_changes", "new", "deleted", "image", "image_src", "plain_mode", "alternate", "lookahead", "lookback", "lookup", "parent_lbox", "magic_backpointer", "indent"]
+    __slots__ = ["name", "log", "max_version", "version", "position", "changed", "isolated", "textlen", "local_error", "nested_errors", "nested_changes", "new", "deleted", "image", "image_src", "plain_mode", "alternate", "lookahead", "lookback", "lookup", "parent_lbox", "magic_backpointer", "indent"]
     def __init__(self, symbol, state=-1, children=[], pos=-1, lookahead=0):
         Node.__init__(self, symbol, state, children)
         self.position = 0
@@ -519,6 +519,7 @@ class TextNode(Node):
         self.textlen = -1
         self.isolated = None
         self.lookback = 0
+        self.name = None
 
     def get_magicterminal(self):
         try:
