@@ -23,7 +23,8 @@ class AutoLBoxDetector(object):
         outer_lang = outer_root.name
         outer_parser, outer_lexer = self.langs[outer_lang]
         r = IncrementalRecognizer(outer_parser.syntaxtable, outer_lexer.lexer, outer_lang)
-        return r.parse(outer_root, lbox)
+        r.preparse(outer_root, lbox)
+        return r.parse(lbox.symbol.ast.children[0].next_term)
 
     def detect_languagebox(self, node):
         # Get current language
@@ -128,7 +129,7 @@ class Recognizer(object):
         elif self.lang == "SQL":
             return token.name in ["SELECT"]
         elif self.lang == "Python expression":
-            return token.name in ["["]
+            return token.name in ["[", "NUMBER"]
         return False
 
 class RecognizerIndent(Recognizer):
@@ -188,22 +189,22 @@ class RecognizerIndent(Recognizer):
             return Terminal(tok1[1]) # parse <return> token first
 
 class IncrementalRecognizer(Recognizer):
-    def parse(self, outer_root, lbox):
-        # Start parsing incrementally from BOS. Parsing was successful if we
-        # reached and parsed the last node of the language box.
-        path_to_lbox = set()
-        parent = lbox.parent
+
+    def preparse(self, outer_root, stop):
+        """Puts the recogniser into the state just before `stop`."""
+        path_to_stop = set()
+        parent = stop.parent
         while parent is not None:
-            path_to_lbox.add(parent)
+            path_to_stop.add(parent)
             parent = parent.parent
 
         # setup parser to the state just before lbox
         node = outer_root.children[1]
         while True:
-            if node is lbox:
-                # Reached lbox
+            if node is stop:
+                # Reached stop node
                 break
-            if node not in path_to_lbox:
+            if node not in path_to_stop:
                 # Skip/Shift nodes that are not parents of the language box
                 goto = self.syntaxtable.lookup(self.state[-1], node.symbol)
                 if goto:
@@ -217,11 +218,13 @@ class IncrementalRecognizer(Recognizer):
                 else:
                     node = node.right
 
+    def parse(self, node):
+        """Parse normally starting at `node`."""
+
         # try parsing lbox content in outer language
-        lbox_start = lbox.symbol.ast.children[0].next_term
-        result = Recognizer.parse(self, lbox_start, valid_override=True)
+        result = Recognizer.parse(self, node, valid_override=True)
         if self.reached_eos:
-            after_lbox = lbox.next_term
+            #after_lbox = lbox.next_term
             # XXX validate language box by checking if the next token after the
             # language box has been shifted is valid (reduce/shift)
             return True
