@@ -37,36 +37,33 @@ class AutoLBoxDetector(object):
             # get most left terminal
             if type(term) is BOS:
                 break
+            elif type(term) is EOS:
+                term = term.prev_term
+                continue
 
-            # Check if first token is valid in one of the autobox grammars
-            for langname in self.langs:
-                p, l = self.langs[langname]
-                state = term.prev_term.state
-                result = parser.is_valid_symbol(state, MagicTerminal("<%s>" % (langname,)))
-                if result:
-                    end = self.detect_end(langname, term)
-                    if end and self.contains_errornode(term, end, node):
-                       print "SUCESS!!!!"
-                       return (term, end, langname)
+            #XXX check if term is valid in any of the langs first? If not we don't need to increc
+            outer_root = term.get_root()
+            outer_lang = outer_root.name
+            outer_parser, outer_lexer = self.langs[outer_lang]
+            r = IncrementalRecognizer(outer_parser.syntaxtable, outer_lexer.lexer, outer_lang)
+            result = r.preparse(outer_root, term)
+            if result:
+                # Check if first token is valid in one of the autobox grammars
+                for langname in self.langs:
+                    if r.is_valid(MagicTerminal("<%s>" % (langname,))):
+                        end = self.detect_end(langname, term)
+                        if end and self.contains_errornode(term, end, node):
+                            print "SUCESS!!!!"
+                            return (term, end, langname)
+                    else:
+                        print("Language box {} not valid at position {} in {}\n".format(langname, term, outer_lang))
                     print ""
+            else:
+                print("Result fucked")
             term = term.prev_term
 
-    def check_languagebox(self, lbox, term):
-        pass
-        
-
     def detect_end(self, lang, start):
-        if type(start) is EOS:
-            return None
         parser, lexer = self.langs[lang]
-        outer_root = start.get_root()
-        outer_lang = outer_root.name
-        outer_parser, outer_lexer = self.langs[outer_lang]
-        r = IncrementalRecognizer(outer_parser.syntaxtable, outer_lexer.lexer, outer_lang)
-        result = r.preparse(start.get_root(), start)
-        if not result or not r.is_valid(MagicTerminal("<%s>" % (lang,))):
-            print("Language box {} not valid at position {} in {}\n".format(lang, start, outer_lang))
-            return None
         print("Language box valid. Find lbox end")
         if lexer.indentation_based:
             r = RecognizerIndent(parser.syntaxtable, lexer.lexer, lang)
@@ -259,22 +256,23 @@ class IncrementalRecognizer(Recognizer):
 
     def is_valid(self, token):
         """Checks if a token is valid in the current state."""
+        state = list(self.state)
         while True:
-            element = self.syntaxtable.lookup(self.state[-1], token)
-            print("Checking validity of {} in state {}: {}".format(token, self.state, element))
+            element = self.syntaxtable.lookup(state[-1], token)
+            print("Checking validity of {} in state {}: {}".format(token, state, element))
             if type(element) is Shift:
-                self.state.append(element.action)
+                state.append(element.action)
                 return True
             elif type(element) is Reduce:
                 i = 0
                 while i < element.amount():
-                   self.state.pop()
+                   state.pop()
                    i += 1
-                goto = self.syntaxtable.lookup(self.state[-1], element.action.left)
+                goto = self.syntaxtable.lookup(state[-1], element.action.left)
                 assert isinstance(goto, Goto)
-                self.state.append(goto.action)
+                state.append(goto.action)
             else:
-                print("Error on", token, self.state)
+                print("Error on", token, state)
                 return False
         return False
 
