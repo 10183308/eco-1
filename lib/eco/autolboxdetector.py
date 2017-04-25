@@ -53,36 +53,29 @@ class AutoLBoxDetector(object):
                     if r.is_valid(MagicTerminal("<%s>" % (langname,))):
                         end = self.detect_end(langname, term)
                         if end and self.contains_errornode(term, end, node):
-                            print "SUCESS!!!!"
                             return (term, end, langname)
                     else:
-                        print("Language box {} not valid at position {} in {}\n".format(langname, term, outer_lang))
-                    print ""
-            else:
-                print("Result fucked")
+                        #print("Language box {} not valid at position {} in {}\n".format(langname, term, outer_lang))
+                        pass
             term = term.prev_term
 
     def detect_end(self, lang, start):
         parser, lexer = self.langs[lang]
-        print("Language box valid. Find lbox end")
+        #print("Language box valid. Find lbox end")
         if lexer.indentation_based:
             r = RecognizerIndent(parser.syntaxtable, lexer.lexer, lang)
         else:
             r = Recognizer(parser.syntaxtable, lexer.lexer, lang)
         end = r.parse(start)
-        print "end:", end
         return end
 
     def contains_errornode(self, start, end, error):
-        print "Searching for error node", start, end, error
         while True:
-            print "   ", start
             if start is error:
                 return True
             if start is end:
                 break
             start = start.next_term
-        print("does not contain error node")
         return False
 
 from inclexer.inclexer import StringWrapper
@@ -106,7 +99,6 @@ class Recognizer(object):
         if not valid_override and not self.valid_start(token):
             return None
         while True:
-            print("token", token)
             element = self.syntaxtable.lookup(self.state[-1], token)
             if isinstance(element, Shift):
                 self.state.append(element.action)
@@ -211,7 +203,7 @@ class IncrementalRecognizer(Recognizer):
 
     def preparse(self, outer_root, stop):
         """Puts the recogniser into the state just before `stop`."""
-        print("Preparsing {} upto {}".format(outer_root, stop))
+        #print("Preparsing {} upto {}".format(outer_root, stop))
         path_to_stop = set()
         parent = stop.parent
         while parent is not None:
@@ -223,9 +215,7 @@ class IncrementalRecognizer(Recognizer):
         while True:
             if node is stop:
                 # Reached stop node
-                print ("reached stop")
                 return True
-            print("parsing {}".format(node))
             if node not in path_to_stop:
                 # Skip/Shift nodes that are not parents of the language box
                 lookup = self.get_lookup(node)
@@ -240,12 +230,10 @@ class IncrementalRecognizer(Recognizer):
                        self.state.pop()
                        i += 1
                     goto = self.syntaxtable.lookup(self.state[-1], element.action.left)
-                    print("    {}".format(element.action))
                     assert isinstance(goto, Goto)
                     self.state.append(goto.action)
                     continue
                 else:
-                    print("Error on", node, self.state)
                     return False
                 node  = node.right
             else:
@@ -259,7 +247,7 @@ class IncrementalRecognizer(Recognizer):
         state = list(self.state)
         while True:
             element = self.syntaxtable.lookup(state[-1], token)
-            print("Checking validity of {} in state {}: {}".format(token, state, element))
+            #print("Checking validity of {} in state {}: {}".format(token, state, element))
             if type(element) is Shift:
                 state.append(element.action)
                 return True
@@ -272,7 +260,7 @@ class IncrementalRecognizer(Recognizer):
                 assert isinstance(goto, Goto)
                 state.append(goto.action)
             else:
-                print("Error on", token, state)
+                #print("Error on", token, state)
                 return False
         return False
 
