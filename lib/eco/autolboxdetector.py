@@ -209,8 +209,8 @@ class RecognizerIndent(Recognizer):
             else:
                 while ws_len < self.indents[-1]:
                     self.todo.append(Terminal("DEDENT"))
-                    self.todo.append(Terminal("NEWLINE"))
                     self.indents.pop()
+                self.todo.append(Terminal("NEWLINE"))
             return Terminal(tok1[1]) # parse <return> token first
 
 class IncrementalRecognizer(Recognizer):
