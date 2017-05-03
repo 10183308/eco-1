@@ -77,7 +77,6 @@ class AutoLBoxDetector(object):
         if end is None:
             return None
         while True:
-            print(end)
             if end.lookup not in ["<ws>", "<return>"]:
                 break
             end = end.prev_term
