@@ -150,7 +150,7 @@ class Recognizer(object):
         if self.lang == "Python + PHP":
             if token.name in ["def"]:
                 return True
-        elif self.lang == "SQL":
+        elif self.lang == "SQL Statement":
             return token.name in ["SELECT"]
         elif self.lang == "Python expression":
             return token.name in ["[", "NUMBER"]

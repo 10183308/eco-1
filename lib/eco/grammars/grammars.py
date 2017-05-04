@@ -131,9 +131,12 @@ javascript = EcoFile("JavaScript", "grammars/javascript.eco", "JavaScript")
 pythonprolog = EcoFile("Python + Prolog", "grammars/python275.eco", "Python")
 pythonprolog.add_alternative("atom", prolog)
 
+sql_single = EcoFile("SQL Statement", "grammars/sql.eco", "Sql")
+sql_single.change_start("sql_line")
+
 pythonhtmlsql = EcoFile("Python + HTML + SQL", "grammars/python275.eco", "Python")
 pythonhtmlsql.add_alternative("atom", html)
-pythonhtmlsql.add_alternative("atom", sql)
+pythonhtmlsql.add_alternative("atom", sql_single)
 
 htmlpythonsql = EcoFile("HTML + Python + SQL", "grammars/html.eco", "Html")
 htmlpythonsql.add_alternative("element", pythonhtmlsql)
@@ -173,7 +176,7 @@ rubysl.add_alternative("top_stmt", simplelang)
 rubyjs = EcoFile("Ruby + JavaScript", "grammars/ruby.eco", "Ruby")
 rubyjs.add_alternative("top_stmt", javascript)
 
-languages = [calc, java, javasqlchemical, java_expr, php, phppython, python, pythonhtmlsql, pythonprolog, pythonphp, prolog, sql, sql_ref_java, html, htmlpythonsql, eco, scoping, img, chemical, eco_grammar, python_expr, ipython, pythonipython, simplelang, ruby, rubysl, rubyjs, javascript]
+languages = [calc, java, javasqlchemical, java_expr, php, phppython, python, pythonhtmlsql, pythonprolog, pythonphp, prolog, sql, sql_single, sql_ref_java, html, htmlpythonsql, eco, scoping, img, chemical, eco_grammar, python_expr, ipython, pythonipython, simplelang, ruby, rubysl, rubyjs, javascript]
 newfile_langs = [java, javasqlchemical, php, phppython, python, pythonhtmlsql, pythonprolog, prolog, sql, html, htmlpythonsql, pythonipython, calc, ruby, simplelang, rubysl, rubyjs, javascript]
 submenu_langs = [java, javasqlchemical, java_expr, php, phppython, python, pythonhtmlsql, pythonprolog, pythonphp, python_expr, prolog, sql, sql_ref_java, html, htmlpythonsql, img, chemical, ipython, ruby, simplelang, javascript, rubysl, rubyjs]
 
