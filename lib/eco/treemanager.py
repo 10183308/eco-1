@@ -135,6 +135,11 @@ class Cursor(object):
         if self.pos > 1 and (not node.image or node.plain_mode):
             self.pos -= 1
         else:
+            # if neighbouring node is BOS, stay in box
+            if type(node.previous_terminal()) is BOS:
+                self.node = node.previous_terminal()
+                self.pos = 0
+                return
             node = self.find_previous_visible(node)
             self.node = node
             self.pos = len(node.symbol.name)
