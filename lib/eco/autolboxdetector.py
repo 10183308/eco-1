@@ -269,6 +269,9 @@ class IncrementalRecognizer(Recognizer):
         # setup parser to the state just before lbox
         node = outer_root.children[1]
         while True:
+            if node.deleted:
+                node = node.right
+                continue
             if node is stop:
                 # Reached stop node
                 return True
