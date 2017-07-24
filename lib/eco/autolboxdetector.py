@@ -191,6 +191,8 @@ class NewAutoLboxDetector(object):
                 cut = cut - 1
         if valid:
             errornode.autobox = valid
+        else:
+            errornode.autobox = None
 
     def contains_errornode(self, start, end, errornode):
         while start is not end:
