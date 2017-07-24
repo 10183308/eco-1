@@ -4180,6 +4180,22 @@ class Test_AutoLanguageBoxDetection():
         for c in range(len(p)):
             treemanager.key_backspace()
 
+    def test_php_bug4(self):
+        parser, lexer = phppython.load()
+        parser.setup_autolbox(phppython.name)
+        treemanager = TreeManager()
+        treemanager.add_parser(parser, lexer, "")
+        p = """function x(){
+
+    return 12;
+}"""
+        treemanager.import_file(p)
+        treemanager.key_cursors(DOWN)
+        treemanager.key_home()
+        for c in "    $x = def y():":
+            treemanager.key_normal(c)
+        assert len(treemanager.parsers) == 2
+
     def test_java_py_string(self):
         parser, lexer = javapy.load()
         parser.setup_autolbox(javapy.name)

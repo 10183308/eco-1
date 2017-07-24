@@ -253,14 +253,17 @@ class Recognizer(object):
         self.possible_ends = []
         self.last_read = None
 
+    def reset(self):
+        self.state = [0]
+        self.reached_eos = False
+        self.seen_error = False
+        self.possible_ends = []
+        self.last_read = None
+
     def parse(self, startnode, ppmode=False):
         # as we are reusing recogisers now, reset it
         if not ppmode:
-            self.state = [0]
-            self.reached_eos = False
-            self.seen_error = False
-            self.possible_ends = []
-            self.last_read = None
+            self.reset()
 
         self.tokeniter = self.lexer.get_token_iter(StringWrapper(startnode, startnode))
         token = self.next_token()
@@ -369,6 +372,13 @@ class RecognizerIndent(Recognizer):
         self.indents = [0]
         self.todo = []
         Recognizer.parse(self, node)
+
+    def reset(self):
+        self.todo = []
+        self.indents = [0]
+        self.last_ws = 0
+        self.logical_line = False
+        Recognizer.reset(self)
 
     def get_token_iter(self):
         try:
