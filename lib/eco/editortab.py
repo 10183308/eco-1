@@ -382,7 +382,7 @@ class AutoLBoxComplete(QFrame):
                 s, e, l = action.data().toPyObject()
                 self.parent().editor.tm.select_nodes(s, e)
                 langdef = self.parent().editor.tm.get_langdef_from_string(l)
-                self.parent().editor.tm.surround_with_languagebox(langdef, True)
+                self.parent().editor.tm.surround_with_languagebox(langdef)
                 self.parent().editor.tm.reparse(s)
                 self.parent().editor.getWindow().btReparse([]) # refresh gui
                 self.parent().editor.update() # refresh code editor
