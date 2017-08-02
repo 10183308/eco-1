@@ -655,7 +655,7 @@ class IncrementalLexerCF(object):
                 node.parent.update_children()
 
     def merge_pair(self, tokens, read):
-        if len(tokens) == 1 and tokens[0][0] == "\x81":
+        if len(tokens) == 1 and tokens[0][0] in ["\x81", "\x80"]:
             return False
 
         lastread = read[0].prev_term
