@@ -545,9 +545,12 @@ class NodeEditor(QFrame):
             # check if node is connected to auto lbox
             if node.autobox:
                 if self.autolboxlines.has_key(line):
-                    self.autolboxlines[line].extend(node.autobox)
+                    for box in node.autobox:
+                        # XXX need to compare s, e with identity?
+                        if box not in self.autolboxlines[line]:
+                            self.autolboxlines[line].append(box)
                 else:
-                    self.autolboxlines[line] = node.autobox
+                    self.autolboxlines[line] = list(node.autobox)
 
             if False and line == self.cursor.y and x/self.fontwt >= self.cursor.x and draw_cursor:
                 draw_cursor_at = QRect(0 + self.cursor.x * self.fontwt, 5 + y * self.fontht, 0, self.fontht - 3)
