@@ -259,8 +259,6 @@ class IncParser(object):
                                 # traverse their children to find the error
                                 # nodes and report them back to the editor.
                                 self.find_nested_error(la)
-                                if self.autodetector:
-                                    self.autodetector.detect_lbox(la.isolated)
                             la = self.pop_lookahead(la)
                             self.validating = True
                             continue
