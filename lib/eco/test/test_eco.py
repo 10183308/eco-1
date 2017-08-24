@@ -3902,7 +3902,6 @@ class Test_RetainSubtree:
         # retained at the same time
         assert WS3 is not WS
 
-from autolboxdetector import AutoLBoxDetector
 from grammars.grammars import sql_single, javapy, javasqlchemical, javasql
 
 # Add some more compositions that we only need inside the test environment
@@ -4354,6 +4353,8 @@ class Test_AutoLanguageBoxDetection():
         assert treemanager.parsers[0][0].last_status is True
         assert treemanager.parsers[1][0].last_status is True
 
+    import os
+    @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true", reason="JavaSQL takes too long to built on Travis. Skip!")
     def test_java_sql_skip_comments(self):
         p = """public class Scribble {
 
