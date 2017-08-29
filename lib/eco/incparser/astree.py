@@ -163,6 +163,8 @@ class Node(object):
         self.prev_term = None
         self.next_term = None
         self.magic_parent = None
+        if children is None:
+            children = []
         self.set_children(children)
         self.log = {}
         self.max_version = None
@@ -498,7 +500,7 @@ digits = set(list(string.digits))
 
 class TextNode(Node):
     __slots__ = ["autobox", "tbd", "name", "log", "max_version", "version", "position", "changed", "isolated", "textlen", "local_error", "nested_errors", "nested_changes", "new", "deleted", "image", "image_src", "plain_mode", "alternate", "lookahead", "lookback", "lookup", "parent_lbox", "magic_backpointer", "indent"]
-    def __init__(self, symbol, state=-1, children=[], pos=-1, lookahead=0):
+    def __init__(self, symbol, state=-1, children=None, pos=-1, lookahead=0):
         Node.__init__(self, symbol, state, children)
         self.position = 0
         self.changed = False #XXX should maybe be True by default

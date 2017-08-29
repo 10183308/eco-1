@@ -1,4 +1,4 @@
-from grammars.grammars import calc, python
+from grammars.grammars import calc, python, php
 from treemanager import TreeManager
 from utils import KEY_UP as UP, KEY_DOWN as DOWN, KEY_LEFT as LEFT, KEY_RIGHT as RIGHT
 from grammars.grammars import EcoFile
@@ -293,3 +293,30 @@ y = 2"""
         assert bos.next_term.next_term.next_term.symbol.name == '"""ab"""'
         assert bos.next_term.next_term.next_term.next_term.symbol.name == 'c'
         assert bos.next_term.next_term.next_term.next_term.next_term.symbol.name == '""'
+
+
+class Test_MultiTextNodePHP:
+
+    def setup_class(cls):
+        parser, lexer = php.load()
+        cls.lexer = lexer
+        cls.parser = parser
+        cls.parser.init_ast()
+        cls.ast = cls.parser.previous_version
+        cls.treemanager = TreeManager()
+        cls.treemanager.add_parser(cls.parser, cls.lexer, php.name)
+
+        cls.treemanager.set_font_test(7, 17) # hard coded. PyQt segfaults in test suite
+
+    def test_paste_comment(self):
+        paste = """$shake_error_codes = array( 'empty_password', 'empty_email', 'invalid_email', 'invalidcombo', 'empty_username', 'invalid_username', 'incorrect_password' );
+	/**
+	 * Filters the error codes array for shaking the login form.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $shake_error_codes Error codes that shake the login form.
+	 */
+	$shake_error_codes = apply_filters( 'shake_error_codes', $shake_error_codes );"""
+
+        self.treemanager.pasteText(paste)
